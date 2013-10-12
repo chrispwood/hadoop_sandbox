@@ -1,0 +1,25 @@
+apply plugin: 'java'
+defaultTasks 'clean', 'build'
+buildDir 'target'
+
+mainClassName = 'org.wood.hadoop.examples'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile 'org.apache.lucene:lucene-core:3.6.+'
+  compile 'org.apache.hadoop:hadoop-core:1.+'
+  runtime 'org.apache.lucene:lucene-core:3.6.+'
+  runtime 'org.apache.hadoop:hadoop-core:1.+'
+}
+
+jar {
+  dependsOn configurations.runtime
+  from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+processResources {
+	from "src/resources"
+}
