@@ -1,7 +1,6 @@
 /**
  * @author cwood
  * @credit:
- *   http://thekandyancode.wordpress.com/2013/02/04/tokenizing-stopping-and-stemming-using-apache-lucene/
  *   org.apache.hadoop.examples
  * Here I have derived 
  */

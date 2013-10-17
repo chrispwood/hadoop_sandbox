@@ -1,0 +1,16 @@
+apply plugin: 'java'
+buildDir 'target'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile 'org.apache.hadoop:hadoop-core:1.+'
+  runtime 'org.apache.hadoop:hadoop-core:1.+'
+}
+
+jar {
+  dependsOn configurations.runtime
+  from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+}
