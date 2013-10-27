@@ -20,9 +20,9 @@ public class AverageSentenceLength {
 	
 
 	public static class SentenceMapper
-		extends Mapper<Object, Text, Text, SentenceWriter> {
+		extends Mapper<Object, Text, CustomFilename, SentenceWriter> {
 
-		private static final String pattern = "(.*?)\\.";
+		private static final String pattern = "(.*?)[\\.!?]";
 		private Pattern p;
 
 		public SentenceMapper() {
@@ -35,22 +35,24 @@ public class AverageSentenceLength {
 			FileSplit fileSplit = (FileSplit)context.getInputSplit();
 			Matcher m = p.matcher(value.toString());
 			String filename = fileSplit.getPath().getName();
-			Text txt = new Text(filename);
+			CustomFilename cf = new CustomFilename(filename);
+			//Text txt = new Text(filename);
 
 			while(m.find()) {
-				SentenceWriter sw = new SentenceWriter();
-				sw.addSentence(m.group(0));
-				context.write(txt, sw);
+				SentenceWriter sw = new SentenceWriter(m.group(0));
+				//sw.addSentence(m.group(0));
+				//context.write(txt, sw);
+				context.write(cf, sw);
 			}
 		}
 	}	
 
 	public static class AverageSentenceReducer
-		extends Reducer<Text, SentenceWriter, Text, DoubleWritable> {
+		extends Reducer<CustomFilename, SentenceWriter, CustomFilename, DoubleWritable> {
 
 		private DoubleWritable dw = new DoubleWritable();
 
-		public void reduce(Text key, Iterable<SentenceWriter> sentences,
+		public void reduce(CustomFilename key, Iterable<SentenceWriter> sentences,
 			Context context) throws IOException, InterruptedException {
 
 			int sentenceCount = 0;
@@ -79,7 +81,8 @@ public class AverageSentenceLength {
 
 		/* Note: in a job configuration, this defines the expected 
 			*mapper* output, not the reducer output */
-		job.setOutputKeyClass(Text.class);
+		//job.setOutputKeyClass(Text.class);
+		job.setOutputKeyClass(CustomFilename.class);
 		job.setOutputValueClass(SentenceWriter.class);
 
 		/* If we wanted to reduce the number of key/value pairs
